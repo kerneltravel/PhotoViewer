@@ -40,8 +40,6 @@
 	
 	BOOL _loading;
 	CGRect _currentRect;
-	CGFloat _beginRadians;
-	CGPoint _midPos;
 	
 }
 

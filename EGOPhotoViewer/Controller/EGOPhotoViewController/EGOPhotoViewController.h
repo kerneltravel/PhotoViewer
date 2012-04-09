@@ -56,12 +56,6 @@
 
 	BOOL _autoresizedPopover;
 	id _popover;
-	
-	BOOL _fullScreen;
-	BOOL _fromPopover;
-	UIView *_popoverOverlay;
-	UIView *_transferView;
-	
 }
 
 - (id)initWithPhoto:(id<EGOPhoto>)aPhoto;
@@ -75,9 +69,7 @@
 @property(nonatomic,readonly) id <EGOPhotoSource> photoSource;
 @property(nonatomic,retain) NSMutableArray *photoViews;
 @property(nonatomic,retain) UIScrollView *scrollView;
-@property(nonatomic,assign) BOOL _fromPopover;
 
-- (NSInteger)currentPhotoIndex;
 - (void)moveToPhotoAtIndex:(NSInteger)index animated:(BOOL)animated;
 
 @end
