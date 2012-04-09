@@ -104,7 +104,6 @@
 #pragma mark EGOPhotoViewer Popover
 
 - (void)showPhotoView:(UIBarButtonItem*)sender{
-
 	
 	MyPhoto *webPhoto = [[MyPhoto alloc] initWithImageURL:[NSURL URLWithString:@"http://a3.twimg.com/profile_images/66601193/cactus.jpg"] name:@" laksd;lkas;dlkaslkd ;a"];
 	MyPhoto *filePathPhoto = [[MyPhoto alloc] initWithImageURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"local_image_2" ofType:@"jpg"]]];
@@ -128,7 +127,8 @@
 	
 	[photoController release];
 	[navController release];
-	 
+
+	
 }
 
 #pragma mark -

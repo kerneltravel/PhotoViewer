@@ -66,7 +66,6 @@
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(toggleBarsNotification:) name:@"EGOPhotoViewToggleBars" object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(photoViewDidFinishLoading:) name:@"EGOPhotoDidFinishLoading" object:nil];
 		
-		self.hidesBottomBarWhenPushed = YES;
 		self.wantsFullScreenLayout = YES;		
 		_photoSource = [aSource retain];
 		_pageIndex=0;
@@ -152,37 +151,28 @@
 - (void)viewWillAppear:(BOOL)animated{
 	[super viewWillAppear:animated];
 	
-	
-	
-	if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 3.2) {
-		
-		UIView *view = self.view;
-		if (self.navigationController) {
-			view = self.navigationController.view;
-		}
-		
-		while (view != nil) {
-			
-			if ([view isKindOfClass:NSClassFromString(@"UIPopoverView")]) {
-				
-				_popover = view;
-				break;
-			
-			} 
-			view = view.superview;
-		}
-		
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 30200
-		if (UI_USER_INTERFACE_IDIOM()==UIUserInterfaceIdiomPad && _popover==nil) {
-			[self.navigationController setNavigationBarHidden:NO animated:NO];
-		}
-#endif
+	
+	UIView *view = self.view;
+	while (view != nil) {
 		
-	} else {
+		if ([view isKindOfClass:NSClassFromString(@"UIPopoverView")]) {
+			
+			_popover = view;
+			break;
+		} 
 		
-		_popover = nil;
-		
+		view = view.superview;
 	}
+	
+	if (UI_USER_INTERFACE_IDIOM()==UIUserInterfaceIdiomPad && _popover==nil) {
+		[self.navigationController setNavigationBarHidden:NO animated:NO];
+	}
+	
+#else
+	_popover = nil;
+#endif
+
 	
 	if(!_storedOldStyles) {
 		_oldStatusBarSyle = [UIApplication sharedApplication].statusBarStyle;
@@ -214,6 +204,7 @@
 	[self setupToolbar];
 	[self setupScrollViewContentSize];
 	[self moveToPhotoAtIndex:_pageIndex animated:NO];
+
 	
 }
 
