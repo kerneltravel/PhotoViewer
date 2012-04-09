@@ -126,13 +126,9 @@
 			
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 40000
 			
-			NSError *error = nil;
-			NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[self.photo.URL path] error:&error];
-			NSInteger fileSize = [[attributes objectForKey:NSFileSize] integerValue];
-
-			if (fileSize >= 1048576 && [[[UIDevice currentDevice] systemVersion] floatValue] >= 4.0) {
+			if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 4.0) {
 								
-				dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+				dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 					
 					UIImage *_image = nil;
 					NSData *_data = [NSData dataWithContentsOfURL:self.photo.URL];
@@ -200,7 +196,6 @@
 	
 	[[self layer] addAnimation:[self fadeAnimation] forKey:@"opacity"];
 	self.userInteractionEnabled = YES;
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"EGOPhotoDidFinishLoading" object:[NSDictionary dictionaryWithObjectsAndKeys:self.photo, @"photo", [NSNumber numberWithBool:NO], @"failed", nil]];
 	
 }
 
@@ -218,7 +213,6 @@
 	[self layoutScrollViewAnimated:NO];
 	self.userInteractionEnabled = NO;
 	[_activityView stopAnimating];
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"EGOPhotoDidFinishLoading" object:[NSDictionary dictionaryWithObjectsAndKeys:self.photo, @"photo", [NSNumber numberWithBool:YES], @"failed", nil]];
 	
 }
 
@@ -371,6 +365,8 @@
 	
 	[self setupImageViewWithImage:[[notification userInfo] objectForKey:@"image"]];
 	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"EGOPhotoDidFinishLoading" object:[NSDictionary dictionaryWithObjectsAndKeys:self.photo, @"photo", [NSNumber numberWithBool:NO], @"failed", nil]];
+	
 }
 
 - (void)imageLoaderDidFailToLoad:(NSNotification*)notification {
@@ -379,6 +375,7 @@
 	if(![[[notification userInfo] objectForKey:@"imageURL"] isEqual:self.photo.URL]) return;
 	
 	[self handleFailedImage];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"EGOPhotoDidFinishLoading" object:[NSDictionary dictionaryWithObjectsAndKeys:self.photo, @"photo", [NSNumber numberWithBool:YES], @"failed", nil]];
 	
 }
 

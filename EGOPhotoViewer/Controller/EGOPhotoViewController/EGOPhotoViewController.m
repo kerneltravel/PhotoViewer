@@ -120,7 +120,7 @@
 		EGOPhotoCaptionView *view = [[EGOPhotoCaptionView alloc] initWithFrame:CGRectMake(0.0f, self.view.frame.size.height, self.view.frame.size.width, 1.0f)];
 		[self.view addSubview:view];
 		_captionView=view;
-		[view release];
+		[_captionView release];
 		
 	}
 	
@@ -151,6 +151,8 @@
 
 - (void)viewWillAppear:(BOOL)animated{
 	[super viewWillAppear:animated];
+	
+	
 	
 	if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 3.2) {
 		
@@ -197,28 +199,21 @@
 		_storedOldStyles = YES;
 	}	
 	
-	if ([self.navigationController isToolbarHidden] && (!_popover || ([self.photoSource numberOfPhotos] > 1))) {
+	if ([self.navigationController isToolbarHidden] && !_popover) {
 		[self.navigationController setToolbarHidden:NO animated:YES];
 	}
 	
-	if (!_popover) {
-		self.navigationController.navigationBar.tintColor = nil;
-		self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
-		self.navigationController.navigationBar.translucent = YES;
-		
-		self.navigationController.toolbar.tintColor = nil;
-		self.navigationController.toolbar.barStyle = UIBarStyleBlack;
-		self.navigationController.toolbar.translucent = YES;
-	}
-
+	self.navigationController.navigationBar.tintColor = nil;
+	self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
+	self.navigationController.navigationBar.translucent = YES;
+	
+	self.navigationController.toolbar.tintColor = nil;
+	self.navigationController.toolbar.barStyle = UIBarStyleBlack;
+	self.navigationController.toolbar.translucent = YES;
 	
 	[self setupToolbar];
 	[self setupScrollViewContentSize];
 	[self moveToPhotoAtIndex:_pageIndex animated:NO];
-	
-	if (_popover) {
-		[self addObserver:self forKeyPath:@"contentSizeForViewInPopover" options:NSKeyValueObservingOptionNew context:NULL];
-	}
 	
 }
 
@@ -245,10 +240,6 @@
 		
 		[self.navigationController setToolbarHidden:_oldToolBarHidden animated:YES];
 		
-	}
-	
-	if (_popover) {
-		[self removeObserver:self forKeyPath:@"contentSizeForViewInPopover"];
 	}
 	
 }
@@ -349,13 +340,6 @@
 		UIBarButtonItem *fixedLeft = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
 		fixedLeft.width = 40.0f;
 		
-		if (_popover && [self.photoSource numberOfPhotos] > 1) {
-			UIBarButtonItem *scaleButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"egopv_fullscreen_button.png.png"] style:UIBarButtonItemStyleBordered target:self action:@selector(toggleFullScreen:)];
-			self.navigationItem.rightBarButtonItem = scaleButton;
-			[scaleButton release];
-		}		
-
-		
 		UIBarButtonItem *left = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"egopv_left.png"] style:UIBarButtonItemStylePlain target:self action:@selector(moveBack:)];
 		UIBarButtonItem *right = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"egopv_right.png"] style:UIBarButtonItemStylePlain target:self action:@selector(moveForward:)];
 		
@@ -388,15 +372,6 @@
 
 
 #pragma mark -
-#pragma mark Popver ContentSize Observing
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context{	
-	[self setupScrollViewContentSize];
-	[self layoutScrollViewSubviews];
-}
-
-
-#pragma mark -
 #pragma mark Bar/Caption Methods
 
 - (void)setStatusBarHidden:(BOOL)hidden animated:(BOOL)animated{
@@ -421,28 +396,26 @@
 		[_captionView setCaptionHidden:hidden];
 		return;
 	}
-		
+	
 	[self setStatusBarHidden:hidden animated:animated];
 	
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 30200
 	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
 		
+		if (animated) {
+			[UIView beginAnimations:nil context:NULL];
+			[UIView setAnimationDuration:0.3f];
+			[UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
+		}
+		
 		if (!_popover) {
-			
-			if (animated) {
-				[UIView beginAnimations:nil context:NULL];
-				[UIView setAnimationDuration:0.3f];
-				[UIView setAnimationCurve:UIViewAnimationCurveEaseInOut];
-			}
-			
 			self.navigationController.navigationBar.alpha = hidden ? 0.0f : 1.0f;
 			self.navigationController.toolbar.alpha = hidden ? 0.0f : 1.0f;
-			
-			if (animated) {
-				[UIView commitAnimations];
-			}
-			
-		} 
+		}
+		
+		if (animated) {
+			[UIView commitAnimations];
+		}
 		
 	} else {
 		
@@ -475,7 +448,7 @@
 
 - (void)setupViewForPopover{
 	
-	if (!_popoverOverlay && _popover && [self.photoSource numberOfPhotos] == 1) {
+	if (!_popoverOverlay && _popover) {
 				
 		UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0.0f, self.view.frame.size.height, self.view.frame.size.width, 40.0f)];
 		view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin;
@@ -690,7 +663,7 @@
 	}
 	
 	if (_captionView) {
-		[_captionView setCaptionText:[[self.photoSource photoAtIndex:_pageIndex] caption] hidden:NO];
+		[_captionView setCaptionText:[[self.photoSource photoAtIndex:_pageIndex] caption] hidden:_barsHidden];
 	}
 	
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 30200
@@ -715,6 +688,7 @@
 	[self setViewState];
 
 	[self enqueuePhotoViewAtIndex:index];
+	
 	
 	[self loadScrollViewWithPage:index-1];
 	[self loadScrollViewWithPage:index];
@@ -787,7 +761,7 @@
 	}
 	
 	_captionView.frame = CGRectMake(0.0f, self.view.bounds.size.height - (toolbarSize + 40.0f), self.view.bounds.size.width, 40.0f);
-
+		
 }
 
 - (void)enqueuePhotoViewAtIndex:(NSInteger)theIndex{

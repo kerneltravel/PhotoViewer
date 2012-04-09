@@ -26,7 +26,6 @@
 
 #import "EGOPhotoCaptionView.h"
 
-#import <QuartzCore/QuartzCore.h>
 
 @implementation EGOPhotoCaptionView
 
@@ -45,7 +44,6 @@
 		_textLabel.shadowOffset = CGSizeMake(0.0f, 1.0f);
 		[self addSubview:_textLabel];
 		[_textLabel release];
-		
 							  
     }
     return self;
@@ -117,7 +115,7 @@
 		
 		CGFloat toolbarSize = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? 32.0f : 44.0f;
 		self.frame = CGRectMake(0.0f, self.superview.frame.size.height - (toolbarSize + self.frame.size.height), self.frame.size.width, self.frame.size.height);
-
+		
 	}
 	
 	[UIView commitAnimations];
