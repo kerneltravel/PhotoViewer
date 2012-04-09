@@ -133,8 +133,7 @@
 #pragma mark Table view delegate
 
 - (void)tableView:(UITableView *)aTableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-
-	
+    
 	if (indexPath.row == 0) {
 		
 		MyPhoto *photo = [[MyPhoto alloc] initWithImageURL:[NSURL URLWithString:@"http://a3.twimg.com/profile_images/66601193/cactus.jpg"] name:@" laksd;lkas;dlkaslkd ;a"];
