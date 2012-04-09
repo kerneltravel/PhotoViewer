@@ -150,32 +150,30 @@
 	}
 
 	
-	if(!_popover) {
-		if(!_storedOldStyles) {
-			
-			_oldStatusBarSyle = [UIApplication sharedApplication].statusBarStyle;
-			
-			_oldNavBarTintColor = [self.navigationController.navigationBar.tintColor retain];
-			_oldNavBarStyle = self.navigationController.navigationBar.barStyle;
-			_oldNavBarTranslucent = self.navigationController.navigationBar.translucent;
-			
-			_oldToolBarTintColor = [self.navigationController.toolbar.tintColor retain];
-			_oldToolBarStyle = self.navigationController.toolbar.barStyle;
-			_oldToolBarTranslucent = self.navigationController.toolbar.translucent;
-			_oldToolBarHidden = [self.navigationController isToolbarHidden];
-			
-			_storedOldStyles = YES;
-			
-		}	
+	if(!_storedOldStyles) {
 		
-		self.navigationController.navigationBar.tintColor = nil;
-		self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
-		self.navigationController.navigationBar.translucent = YES;
+		_oldStatusBarSyle = [UIApplication sharedApplication].statusBarStyle;
+		
+		_oldNavBarTintColor = [self.navigationController.navigationBar.tintColor retain];
+		_oldNavBarStyle = self.navigationController.navigationBar.barStyle;
+		_oldNavBarTranslucent = self.navigationController.navigationBar.translucent;
+		
+		_oldToolBarTintColor = [self.navigationController.toolbar.tintColor retain];
+		_oldToolBarStyle = self.navigationController.toolbar.barStyle;
+		_oldToolBarTranslucent = self.navigationController.toolbar.translucent;
+		_oldToolBarHidden = [self.navigationController isToolbarHidden];
+		
+		_storedOldStyles = YES;
+		
+	}	
+	
+	self.navigationController.navigationBar.tintColor = nil;
+	self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
+	self.navigationController.navigationBar.translucent = YES;
 
-		self.navigationController.toolbar.tintColor = nil;
-		self.navigationController.toolbar.barStyle = UIBarStyleBlack;
-		self.navigationController.toolbar.translucent = YES;
-	}
+	self.navigationController.toolbar.tintColor = nil;
+	self.navigationController.toolbar.barStyle = UIBarStyleBlack;
+	self.navigationController.toolbar.translucent = YES;
 	
 		
 
