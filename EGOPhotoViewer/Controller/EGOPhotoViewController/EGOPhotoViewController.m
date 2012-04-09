@@ -437,6 +437,7 @@
 #pragma mark -
 #pragma mark FullScreen Methods
 
+
 - (void)setupViewForPopover{
 	
 	if (!_popoverOverlay && _popover) {
@@ -680,11 +681,9 @@
 
 	[self enqueuePhotoViewAtIndex:index];
 	
-	
 	[self loadScrollViewWithPage:index-1];
 	[self loadScrollViewWithPage:index];
 	[self loadScrollViewWithPage:index+1];
-	
 	
 	[self.scrollView scrollRectToVisible:((EGOPhotoImageView*)[self.photoViews objectAtIndex:index]).frame animated:animated];
 	
@@ -704,18 +703,16 @@
 
 - (void)layoutScrollViewSubviews{
 	
-	NSInteger _index = [self currentPhotoIndex];
-	
-	for (NSInteger page = _index -1; page < _index+3; page++) {
+	for (NSInteger page = _pageIndex -1; page < _pageIndex+3; page++) {
 		
 		if (page >= 0 && page < [self.photoSource numberOfPhotos]){
 			
 			CGFloat originX = self.scrollView.bounds.size.width * page;
 			
-			if (page < _index) {
+			if (page < _pageIndex) {
 				originX -= EGOPV_IMAGE_GAP;
 			} 
-			if (page > _index) {
+			if (page > _pageIndex) {
 				originX += EGOPV_IMAGE_GAP;
 			}
 			
@@ -723,17 +720,7 @@
 				[self loadScrollViewWithPage:page];
 			}
 			
-			EGOPhotoImageView *_photoView = (EGOPhotoImageView*)[self.photoViews objectAtIndex:page];
-			CGRect newframe = CGRectMake(originX, 0.0f, self.scrollView.bounds.size.width, self.scrollView.bounds.size.height);
-			
-			if (!CGRectEqualToRect(_photoView.frame, newframe)) {	
-				
-				[UIView beginAnimations:nil context:NULL];
-				[UIView setAnimationDuration:0.1];
-				_photoView.frame = newframe;
-				[UIView commitAnimations];
-			
-			}
+			[((EGOPhotoImageView*)[self.photoViews objectAtIndex:page]) setFrame:CGRectMake(originX, 0.0f, self.scrollView.bounds.size.width, self.scrollView.bounds.size.height)];
 			
 		}
 	}
@@ -838,22 +825,18 @@
 #pragma mark UIScrollView Delegate Methods
 
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+- (void)scrollViewDidScroll:(UIScrollView *)sender {
 	
-	NSInteger _index = [self centerPhotoIndex];
-	if (_index >= [self.photoSource numberOfPhotos] || _index < 0) {
+	NSInteger newIndex = [self centerPhotoIndex];
+	if (newIndex >= [self.photoSource numberOfPhotos] || newIndex < 0) {
 		return;
 	}
 	
-	if (_pageIndex != _index && !_rotating) {
+	if (_pageIndex != newIndex && !_rotating) {
 
 		[self setBarsHidden:YES animated:YES];
-		_pageIndex = _index;
+		_pageIndex = newIndex;
 		[self setViewState];
-		
-		if (![scrollView isTracking]) {
-			[self layoutScrollViewSubviews];
-		}
 		
 	}
 		
@@ -861,13 +844,13 @@
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
 	
-	NSInteger _index = [self centerPhotoIndex];
-	if (_index >= [self.photoSource numberOfPhotos] || _index < 0) {
+	NSInteger newIndex = [self centerPhotoIndex];
+	if (newIndex >= [self.photoSource numberOfPhotos] || newIndex < 0) {
 		return;
 	}
+	[self moveToPhotoAtIndex:newIndex animated:YES];
+	[self layoutScrollViewSubviews];
 	
-	[self moveToPhotoAtIndex:_index animated:YES];
-
 }
 
 - (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView{
