@@ -39,7 +39,6 @@
 	UIActivityIndicatorView *_activityView;
 	
 	BOOL _loading;
-	CGRect _currentRect;
 	
 }
 
@@ -53,6 +52,5 @@
 - (void)layoutScrollViewAnimated:(BOOL)animated;
 - (void)prepareForReusue;
 - (void)rotateToOrientation:(UIInterfaceOrientation)orientation;
-- (CGSize)sizeForPopover;
 
 @end
