@@ -1,5 +1,5 @@
 //
-//  EGOQuickPhotoSource.h
+//  TWIPhotoSource.h
 //  EGOPhotoViewer
 //
 //  Created by Devin Doty on 7/3/10.
