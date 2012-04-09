@@ -44,7 +44,9 @@
 		_textLabel.shadowOffset = CGSizeMake(0.0f, 1.0f);
 		[self addSubview:_textLabel];
 		[_textLabel release];
-							  
+		
+		_hidden=NO;
+					  
     }
     return self;
 }
@@ -66,21 +68,26 @@
 	
 }
 
-- (void)setCaptionText:(NSString*)text hidden:(BOOL)val{
+- (void)setCaptionText:(NSString*)text{
 	
-	if (text == nil || [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]].length == 0) {
+	if (text == nil) {
 		
+		[UIView beginAnimations:nil context:NULL];
+		[UIView setAnimationDuration:0.1f];
+		self.alpha = 0.0f;
+		[UIView commitAnimations];
 		_textLabel.text = nil;	
-		[self setHidden:YES];
 		
 	} else {
 		
-		[self setHidden:val];
+		if (!_hidden) {
+			self.alpha = 1.0f;
+		}
+		
 		_textLabel.text = text;
 		
 	}
-	
-	
+
 }
 
 - (void)setCaptionHidden:(BOOL)hidden{
@@ -88,16 +95,18 @@
 	
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 30200
 	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-		
 		[UIView beginAnimations:nil context:NULL];
 		[UIView setAnimationDuration:0.3f];
-		self.alpha= hidden ? 0.0f : 1.0f;
-		[UIView commitAnimations];
+		
+		if (!_textLabel.text) {
+			self.alpha= 0.0f;
+		} else {
+			self.alpha= hidden ? 0.0f : 1.0f;
+		}
 		
 		_hidden=hidden;
-		
+		[UIView commitAnimations];
 		return;
-		
 	}
 #endif
 	
@@ -108,6 +117,7 @@
 		
 		[UIView setAnimationCurve:UIViewAnimationCurveEaseIn];
 		self.frame = CGRectMake(0.0f, self.superview.frame.size.height, self.frame.size.width, self.frame.size.height);
+		self.alpha = 0.0f;
 		
 	} else {
 		
@@ -116,7 +126,9 @@
 		toolbarSize = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? 32.0f : 44.0f;
 		
 		self.frame = CGRectMake(0.0f, self.superview.frame.size.height - (toolbarSize + self.frame.size.height), self.frame.size.width, self.frame.size.height);
-		
+		if (_textLabel.text != nil) {
+			self.alpha = 1.0f;
+		}
 	}
 	
 	[UIView commitAnimations];

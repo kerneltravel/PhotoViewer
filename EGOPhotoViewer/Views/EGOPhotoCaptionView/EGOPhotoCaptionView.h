@@ -32,6 +32,6 @@
 
 }
 
-- (void)setCaptionText:(NSString*)text hidden:(BOOL)val;
+- (void)setCaptionText:(NSString*)text;
 - (void)setCaptionHidden:(BOOL)hidden;
 @end
